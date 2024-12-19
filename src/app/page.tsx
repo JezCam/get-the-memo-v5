@@ -235,7 +235,7 @@ export default function Home() {
                                 style={{
                                     outlineColor: LETTER_COLOURS[letter],
                                     outlineOffset: 4,
-                                    outlineWidth: 4,
+                                    outlineWidth: 3,
                                     border: {
                                         correct: '1px solid green',
                                         incorrect: '1px solid red',
