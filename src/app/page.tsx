@@ -183,7 +183,7 @@ export default function Home() {
             <div className="flex flex-col items-center gap-32">
                 <Cube pieceType={pieceType} letter={letter} />
                 {/* Inputs */}
-                <div className="flex gap-3">
+                <div className="flex items-end gap-3">
                     <TooltipProvider>
                         {state === State.Guessing ||
                         state === State.TryingAgain ? (
@@ -215,41 +215,46 @@ export default function Home() {
                                 </TooltipTrigger>
                             </Tooltip>
                         )}
-                        <Input
-                            value={input}
-                            onChange={(e) => {
-                                if (e.target.value.slice(0, 1) != input) {
-                                    setInput(
-                                        e.target.value.slice(0, 1).toUpperCase()
-                                    )
-                                    if (!e.target.value) {
-                                        return
+                        <div className="flex flex-col gap-2 text-sm font-semibold">
+                            Enter a letter
+                            <Input
+                                value={input}
+                                onChange={(e) => {
+                                    if (e.target.value.slice(0, 1) != input) {
+                                        setInput(
+                                            e.target.value
+                                                .slice(0, 1)
+                                                .toUpperCase()
+                                        )
+                                        if (!e.target.value) {
+                                            return
+                                        }
+                                        submitRef.current?.focus()
                                     }
-                                    submitRef.current?.focus()
-                                }
-                            }}
-                            style={{
-                                outlineColor: LETTER_COLOURS[letter],
-                                outlineOffset: 4,
-                                outlineWidth: 4,
-                                border: {
-                                    correct: '1px solid green',
-                                    incorrect: '1px solid red',
-                                    guessing: '1px solid white',
-                                    revealed: '1px solid red',
-                                    tryingAgain: '1px solid white',
-                                }[state],
-                                color: {
-                                    correct: 'green',
-                                    incorrect: 'red',
-                                    guessing: 'white',
-                                    revealed: 'red',
-                                    tryingAgain: 'white',
-                                }[state],
-                            }}
-                            ref={inputRef}
-                            className="h-20 w-20 rounded-lg bg-black text-center font-[family-name:var(--font-geist-mono)] !text-6xl text-white ring-offset-black"
-                        />
+                                }}
+                                style={{
+                                    outlineColor: LETTER_COLOURS[letter],
+                                    outlineOffset: 4,
+                                    outlineWidth: 4,
+                                    border: {
+                                        correct: '1px solid green',
+                                        incorrect: '1px solid red',
+                                        guessing: '1px solid white',
+                                        revealed: '1px solid red',
+                                        tryingAgain: '1px solid white',
+                                    }[state],
+                                    color: {
+                                        correct: 'green',
+                                        incorrect: 'red',
+                                        guessing: 'white',
+                                        revealed: 'red',
+                                        tryingAgain: 'white',
+                                    }[state],
+                                }}
+                                ref={inputRef}
+                                className="h-20 w-[172px] rounded-lg bg-black text-center font-[family-name:var(--font-geist-mono)] !text-6xl text-white ring-offset-black"
+                            />
+                        </div>
                         {state === State.Guessing ||
                         state === State.TryingAgain ? (
                             <Tooltip>
