@@ -9,7 +9,12 @@ import { Eye, CornerDownLeft, Repeat2, ArrowRight } from 'lucide-react'
 import { getRandomLetter, getRandomPieceType } from '@/lib/utils'
 import { LETTER_COLOURS } from '@/lib/piece-transforms'
 import Image from 'next/image'
-import { Checkbox } from '@/components/ui/checkbox'
+import {
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+    Tooltip,
+} from '@/components/ui/tooltip'
 
 enum State {
     Guessing = 'guessing',
@@ -82,7 +87,7 @@ export default function Home() {
     }
 
     return (
-        <div className="flex h-screen w-screen flex-col items-center justify-center gap-24 bg-black text-white">
+        <div className="flex h-screen w-screen flex-col items-center justify-center gap-24 bg-black font-semibold text-white">
             {/* Top */}
             <div className="flex gap-3">
                 {/* Score */}
@@ -100,63 +105,78 @@ export default function Home() {
                     </div>
                 </div>
                 {/* Configure Pieces */}
-                <div className="flex flex-col gap-2 text-sm font-semibold">
+                <div className="flex flex-col gap-2 text-sm">
                     Configure pieces
                     <div className="flex gap-3">
-                        {/* Corners */}
-                        <button
-                            disabled={!edges}
-                            style={{
-                                border: corners
-                                    ? 'solid 1px hsl(var(--muted))'
-                                    : '1px solid hsl(var(--muted-foreground))',
-                                backgroundColor: corners
-                                    ? 'rgba(250,250,250,.12)'
-                                    : '',
-                                opacity: corners ? 1 : 0.8,
-                            }}
-                            onClick={() => {
-                                if (corners && pieceType === 'corner') {
-                                    setRandomPiece('edge')
-                                }
-                                setCorners(!corners)
-                            }}
-                            className="relative flex h-20 w-20 items-center justify-center rounded-lg border border-muted-foreground"
-                        >
-                            <Image
-                                src={'/corner.svg'}
-                                width={32}
-                                height={32}
-                                alt="corner"
-                            />
-                        </button>
-                        {/* Edges */}
-                        <button
-                            disabled={!corners}
-                            style={{
-                                border: edges
-                                    ? 'solid 1px hsl(var(--muted))'
-                                    : '1px solid hsl(var(--muted-foreground))',
-                                backgroundColor: edges
-                                    ? 'rgba(250,250,250,.12)'
-                                    : '',
-                                opacity: edges ? 1 : 0.8,
-                            }}
-                            onClick={() => {
-                                if (edges && pieceType === 'edge') {
-                                    setRandomPiece('corner')
-                                }
-                                setEdges(!edges)
-                            }}
-                            className="relative flex h-20 w-20 items-center justify-center rounded-lg border border-muted-foreground"
-                        >
-                            <Image
-                                src={'/edge.svg'}
-                                width={32}
-                                height={32}
-                                alt="corner"
-                            />
-                        </button>
+                        <TooltipProvider>
+                            {/* Corners */}
+                            <Tooltip>
+                                <TooltipContent>Allow corners</TooltipContent>
+                                <TooltipTrigger>
+                                    <button
+                                        disabled={!edges}
+                                        style={{
+                                            border: corners
+                                                ? 'solid 1px hsl(var(--muted))'
+                                                : '1px solid hsl(var(--muted-foreground))',
+                                            backgroundColor: corners
+                                                ? 'rgba(250,250,250,.12)'
+                                                : '',
+                                            opacity: corners ? 1 : 0.8,
+                                        }}
+                                        onClick={() => {
+                                            if (
+                                                corners &&
+                                                pieceType === 'corner'
+                                            ) {
+                                                setRandomPiece('edge')
+                                            }
+                                            setCorners(!corners)
+                                        }}
+                                        className="relative flex h-20 w-20 items-center justify-center rounded-lg border border-muted-foreground"
+                                    >
+                                        <Image
+                                            src={'/corner.svg'}
+                                            width={32}
+                                            height={32}
+                                            alt="corner"
+                                        />
+                                    </button>
+                                </TooltipTrigger>
+                            </Tooltip>
+                            {/* Edges */}
+                            <Tooltip>
+                                <TooltipContent>Allow edges</TooltipContent>
+                                <TooltipTrigger>
+                                    <button
+                                        disabled={!corners}
+                                        style={{
+                                            border: edges
+                                                ? 'solid 1px hsl(var(--muted))'
+                                                : '1px solid hsl(var(--muted-foreground))',
+                                            backgroundColor: edges
+                                                ? 'rgba(250,250,250,.12)'
+                                                : '',
+                                            opacity: edges ? 1 : 0.8,
+                                        }}
+                                        onClick={() => {
+                                            if (edges && pieceType === 'edge') {
+                                                setRandomPiece('corner')
+                                            }
+                                            setEdges(!edges)
+                                        }}
+                                        className="relative flex h-20 w-20 items-center justify-center rounded-lg border border-muted-foreground"
+                                    >
+                                        <Image
+                                            src={'/edge.svg'}
+                                            width={32}
+                                            height={32}
+                                            alt="corner"
+                                        />
+                                    </button>
+                                </TooltipTrigger>
+                            </Tooltip>
+                        </TooltipProvider>
                     </div>
                 </div>
             </div>
@@ -164,79 +184,103 @@ export default function Home() {
                 <Cube pieceType={pieceType} letter={letter} />
                 {/* Inputs */}
                 <div className="flex gap-3">
-                    {state === State.Guessing || state === State.TryingAgain ? (
-                        <Button
-                            onClick={handleReveal}
-                            ref={revealRef}
-                            className="h-20 w-20 rounded-lg bg-red-600 [&_svg]:size-8"
-                            variant={'destructive'}
-                        >
-                            <Eye />
-                        </Button>
-                    ) : (
-                        <Button
-                            onClick={handleTryAgain}
-                            ref={revealRef}
-                            className="h-20 w-20 rounded-lg [&_svg]:size-8"
-                            variant={'default'}
-                        >
-                            <Repeat2 />
-                        </Button>
-                    )}
-                    <Input
-                        value={input}
-                        onChange={(e) => {
-                            if (e.target.value.slice(0, 1) != input) {
-                                setInput(
-                                    e.target.value.slice(0, 1).toUpperCase()
-                                )
-                                if (!e.target.value) {
-                                    return
+                    <TooltipProvider>
+                        {state === State.Guessing ||
+                        state === State.TryingAgain ? (
+                            <Tooltip>
+                                <TooltipContent>Reveal letter</TooltipContent>
+                                <TooltipTrigger>
+                                    <Button
+                                        onClick={handleReveal}
+                                        ref={revealRef}
+                                        className="h-20 w-20 rounded-lg bg-red-600 [&_svg]:size-8"
+                                        variant={'destructive'}
+                                    >
+                                        <Eye />
+                                    </Button>
+                                </TooltipTrigger>
+                            </Tooltip>
+                        ) : (
+                            <Tooltip>
+                                <TooltipContent>Try again</TooltipContent>
+                                <TooltipTrigger>
+                                    <Button
+                                        onClick={handleTryAgain}
+                                        ref={revealRef}
+                                        className="h-20 w-20 rounded-lg [&_svg]:size-8"
+                                        variant={'default'}
+                                    >
+                                        <Repeat2 />
+                                    </Button>
+                                </TooltipTrigger>
+                            </Tooltip>
+                        )}
+                        <Input
+                            value={input}
+                            onChange={(e) => {
+                                if (e.target.value.slice(0, 1) != input) {
+                                    setInput(
+                                        e.target.value.slice(0, 1).toUpperCase()
+                                    )
+                                    if (!e.target.value) {
+                                        return
+                                    }
+                                    submitRef.current?.focus()
                                 }
-                                submitRef.current?.focus()
-                            }
-                        }}
-                        style={{
-                            outlineColor: LETTER_COLOURS[letter],
-                            outlineOffset: 4,
-                            outlineWidth: 4,
-                            border: {
-                                correct: '1px solid green',
-                                incorrect: '1px solid red',
-                                guessing: '1px solid white',
-                                revealed: '1px solid red',
-                                tryingAgain: '1px solid white',
-                            }[state],
-                            color: {
-                                correct: 'green',
-                                incorrect: 'red',
-                                guessing: 'white',
-                                revealed: 'red',
-                                tryingAgain: 'white',
-                            }[state],
-                        }}
-                        ref={inputRef}
-                        className="h-20 w-20 rounded-lg bg-black text-center font-[family-name:var(--font-geist-mono)] !text-6xl text-white ring-offset-black"
-                    />
-                    {state === State.Guessing || state === State.TryingAgain ? (
-                        <Button
-                            onClick={handleSubmit}
-                            ref={submitRef}
-                            className="h-20 w-20 rounded-lg [&_svg]:size-8"
-                            variant={'secondary'}
-                        >
-                            <CornerDownLeft />
-                        </Button>
-                    ) : (
-                        <Button
-                            onClick={handleNext}
-                            ref={submitRef}
-                            className="h-20 w-20 rounded-lg [&_svg]:size-8"
-                            variant={'secondary'}
-                        >
-                            <ArrowRight />
-                        </Button>
-                    )}
+                            }}
+                            style={{
+                                outlineColor: LETTER_COLOURS[letter],
+                                outlineOffset: 4,
+                                outlineWidth: 4,
+                                border: {
+                                    correct: '1px solid green',
+                                    incorrect: '1px solid red',
+                                    guessing: '1px solid white',
+                                    revealed: '1px solid red',
+                                    tryingAgain: '1px solid white',
+                                }[state],
+                                color: {
+                                    correct: 'green',
+                                    incorrect: 'red',
+                                    guessing: 'white',
+                                    revealed: 'red',
+                                    tryingAgain: 'white',
+                                }[state],
+                            }}
+                            ref={inputRef}
+                            className="h-20 w-20 rounded-lg bg-black text-center font-[family-name:var(--font-geist-mono)] !text-6xl text-white ring-offset-black"
+                        />
+                        {state === State.Guessing ||
+                        state === State.TryingAgain ? (
+                            <Tooltip>
+                                <TooltipContent>Submit</TooltipContent>
+                                <TooltipTrigger>
+                                    <Button
+                                        onClick={handleSubmit}
+                                        ref={submitRef}
+                                        className="h-20 w-20 rounded-lg [&_svg]:size-8"
+                                        variant={'secondary'}
+                                    >
+                                        <CornerDownLeft />
+                                    </Button>
+                                </TooltipTrigger>
+                            </Tooltip>
+                        ) : (
+                            <Tooltip>
+                                <TooltipContent>Next</TooltipContent>
+                                <TooltipTrigger>
+                                    <Button
+                                        onClick={handleNext}
+                                        ref={submitRef}
+                                        className="h-20 w-20 rounded-lg [&_svg]:size-8"
+                                        variant={'secondary'}
+                                    >
+                                        <ArrowRight />
+                                    </Button>
+                                </TooltipTrigger>
+                            </Tooltip>
+                        )}
+                    </TooltipProvider>
                 </div>
             </div>
         </div>
