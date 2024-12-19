@@ -66,12 +66,19 @@ export default function Home() {
         inputRef.current?.focus()
     }
 
-    const setRandomPiece = (pieceType?: PieceType) => {
+    const setRandomPiece = (_pieceType?: PieceType) => {
         const _letter = getRandomLetter()
-        const _pieceType = getRandomPieceType()
-
         setLetter(_letter)
-        setPieceType(pieceType ?? _pieceType)
+
+        if (_pieceType) {
+            setPieceType(_pieceType)
+            return
+        }
+
+        if (corners && edges) {
+            const _pieceType = getRandomPieceType()
+            setPieceType(_pieceType)
+        }
     }
 
     return (
