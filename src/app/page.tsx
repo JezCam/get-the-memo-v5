@@ -3,11 +3,13 @@
 import Cube from '@/components/cube'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Letter } from '@/lib/definitions'
+import { Letter, PieceType } from '@/lib/definitions'
 import { useRef, useState } from 'react'
 import { Eye, CornerDownLeft, Repeat2, ArrowRight } from 'lucide-react'
 import { getRandomLetter, getRandomPieceType } from '@/lib/utils'
 import { LETTER_COLOURS } from '@/lib/piece-transforms'
+import Image from 'next/image'
+import { Checkbox } from '@/components/ui/checkbox'
 
 enum State {
     Guessing = 'guessing',
@@ -25,18 +27,30 @@ export default function Home() {
     const inputRef = useRef<HTMLInputElement>(null)
     const revealRef = useRef<HTMLButtonElement>(null)
     const submitRef = useRef<HTMLButtonElement>(null)
+    const [corners, setCorners] = useState<boolean>(true)
+    const [edges, setEdges] = useState<boolean>(true)
+    const [score, setScore] = useState<number>(0)
+    const [best, setBest] = useState<number>(0)
 
     const handleReveal = () => {
         setInput(letter)
         setState(State.Revealed)
+        setScore(0)
     }
 
     const handleSubmit = () => {
         if (input === letter) {
+            if (state === State.Guessing) {
+                if (score === best) {
+                    setBest(score + 1)
+                }
+                setScore(score + 1)
+            }
             setState(State.Correct)
         } else {
             setState(State.Incorrect)
             setInput(letter)
+            setScore(0)
         }
     }
 
@@ -52,16 +66,93 @@ export default function Home() {
         inputRef.current?.focus()
     }
 
-    const setRandomPiece = () => {
+    const setRandomPiece = (pieceType?: PieceType) => {
         const _letter = getRandomLetter()
         const _pieceType = getRandomPieceType()
 
         setLetter(_letter)
-        setPieceType(_pieceType)
+        setPieceType(pieceType ?? _pieceType)
     }
 
     return (
-        <div className="flex h-screen w-screen items-center justify-center gap-64 bg-black">
+        <div className="flex h-screen w-screen flex-col items-center justify-center gap-24 bg-black text-white">
+            {/* Top */}
+            <div className="flex gap-3">
+                {/* Score */}
+                <div className="flex flex-col gap-2 text-sm font-semibold">
+                    Score
+                    <div className="relative flex h-20 w-20 items-center justify-center rounded-lg border border-muted-foreground text-2xl">
+                        {score}
+                    </div>
+                </div>
+                {/* Best */}
+                <div className="flex flex-col gap-2 text-sm font-semibold">
+                    Best
+                    <div className="relative flex h-20 w-20 items-center justify-center rounded-lg border border-muted-foreground text-2xl">
+                        {best}
+                    </div>
+                </div>
+                {/* Configure Pieces */}
+                <div className="flex flex-col gap-2 text-sm font-semibold">
+                    Configure pieces
+                    <div className="flex gap-3">
+                        {/* Corners */}
+                        <button
+                            disabled={!edges}
+                            style={{
+                                border: corners
+                                    ? 'solid 1px hsl(var(--muted))'
+                                    : '1px solid hsl(var(--muted-foreground))',
+                                backgroundColor: corners
+                                    ? 'rgba(250,250,250,.12)'
+                                    : '',
+                                opacity: corners ? 1 : 0.8,
+                            }}
+                            onClick={() => {
+                                if (corners && pieceType === 'corner') {
+                                    setRandomPiece('edge')
+                                }
+                                setCorners(!corners)
+                            }}
+                            className="relative flex h-20 w-20 items-center justify-center rounded-lg border border-muted-foreground"
+                        >
+                            <Image
+                                src={'/corner.svg'}
+                                width={32}
+                                height={32}
+                                alt="corner"
+                            />
+                        </button>
+                        {/* Edges */}
+                        <button
+                            disabled={!corners}
+                            style={{
+                                border: edges
+                                    ? 'solid 1px hsl(var(--muted))'
+                                    : '1px solid hsl(var(--muted-foreground))',
+                                backgroundColor: edges
+                                    ? 'rgba(250,250,250,.12)'
+                                    : '',
+                                opacity: edges ? 1 : 0.8,
+                            }}
+                            onClick={() => {
+                                if (edges && pieceType === 'edge') {
+                                    setRandomPiece('corner')
+                                }
+                                setEdges(!edges)
+                            }}
+                            className="relative flex h-20 w-20 items-center justify-center rounded-lg border border-muted-foreground"
+                        >
+                            <Image
+                                src={'/edge.svg'}
+                                width={32}
+                                height={32}
+                                alt="corner"
+                            />
+                        </button>
+                    </div>
+                </div>
+            </div>
             <div className="flex flex-col items-center gap-32">
                 <Cube pieceType={pieceType} letter={letter} />
                 {/* Inputs */}
@@ -118,7 +209,7 @@ export default function Home() {
                             }[state],
                         }}
                         ref={inputRef}
-                        className="h-20 w-20 rounded-lg bg-black text-center !text-6xl text-white ring-offset-black"
+                        className="h-20 w-20 rounded-lg bg-black text-center font-[family-name:var(--font-geist-mono)] !text-6xl text-white ring-offset-black"
                     />
                     {state === State.Guessing || state === State.TryingAgain ? (
                         <Button
