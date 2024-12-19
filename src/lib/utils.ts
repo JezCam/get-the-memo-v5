@@ -11,7 +11,7 @@ export function getRandomPieceType(): PieceType {
     return allPieceTypes[Math.floor(Math.random() * allPieceTypes.length)]
 }
 
-export function getRandomLetter(): Letter {
+export function getRandomLetter(currentLetter: Letter): Letter {
     const allLetters: Letter[] = [
         'A',
         'B',
@@ -38,5 +38,9 @@ export function getRandomLetter(): Letter {
         'W',
         'X',
     ]
-    return allLetters[Math.floor(Math.random() * allLetters.length)]
+    const index = Math.floor(Math.random() * allLetters.length)
+    const newLetter = allLetters[index]
+    if (newLetter === currentLetter)
+        return allLetters[index === 0 ? 1 : index - 1]
+    return newLetter
 }

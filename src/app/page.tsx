@@ -72,7 +72,7 @@ export default function Home() {
     }
 
     const setRandomPiece = (_pieceType?: PieceType) => {
-        const _letter = getRandomLetter()
+        const _letter = getRandomLetter(letter)
         setLetter(_letter)
 
         if (_pieceType) {
