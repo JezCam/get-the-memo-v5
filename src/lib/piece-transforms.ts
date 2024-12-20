@@ -28,6 +28,17 @@ export const BORDER_RADIUS = [
     '10px 10px 0px 10px',
 ]
 
+export const INPUT_STYLES = [
+    { top: -32, left: -32 },
+    { top: -32, left: 68 },
+    { top: -32, left: 168 },
+    { top: 68, left: -32 },
+    { top: 68, left: 168 },
+    { top: 168, left: -32 },
+    { top: 168, left: 68 },
+    { top: 168, left: 168 },
+]
+
 const deg = Math.PI / 180
 const xyz = (
     x: number,
@@ -70,12 +81,12 @@ export const CORNER_ROTATIONS = {
     V: xyz(233.26, 0, -135),
     W: xyz(233.26, 0, -45),
     X: xyz(233.26, 0, 45),
-    1: xyz(233.26, 0, 45),
-    2: xyz(233.26, 0, 45),
-    3: xyz(233.26, 0, 45),
-    4: xyz(233.26, 0, 45),
-    5: xyz(233.26, 0, 45),
-    6: xyz(233.26, 0, 45),
+    0: xyz(0, 0, 0),
+    1: xyz(90, 0, 90),
+    2: xyz(180, 0, 0),
+    3: xyz(90, 0, -90),
+    4: xyz(90, 0, 180),
+    5: xyz(90, 0, 0),
 }
 
 export const EDGE_ROTATIONS = {
@@ -103,12 +114,12 @@ export const EDGE_ROTATIONS = {
     V: xyz(45, 180, 90),
     W: xyz(45, 180, 180),
     X: xyz(45, 180, -90),
-    1: xyz(233.26, 0, 45),
-    2: xyz(233.26, 0, 45),
-    3: xyz(233.26, 0, 45),
-    4: xyz(233.26, 0, 45),
-    5: xyz(233.26, 0, 45),
-    6: xyz(233.26, 0, 45),
+    0: xyz(0, 0, 0),
+    1: xyz(0, -90, 0),
+    2: xyz(180, 0, 0),
+    3: xyz(0, 90, 0),
+    4: xyz(-90, 0, 0),
+    5: xyz(90, 0, 0),
 }
 
 export const CORNER_INDEX_MAP = {
@@ -136,12 +147,12 @@ export const CORNER_INDEX_MAP = {
     V: '2-6',
     W: '2-0',
     X: '2-2',
+    0: '',
     1: '',
     2: '',
     3: '',
     4: '',
     5: '',
-    6: '',
 }
 
 export const EDGE_INDEX_MAP = {
@@ -169,12 +180,12 @@ export const EDGE_INDEX_MAP = {
     V: '2-3',
     W: '2-1',
     X: '2-5',
+    0: '',
     1: '',
     2: '',
     3: '',
     4: '',
     5: '',
-    6: '',
 }
 
 export const CORNER_TRANSFORMS = {
@@ -202,12 +213,12 @@ export const CORNER_TRANSFORMS = {
     V: 'translateX(12px) translateY(-12px) scale(1.2)',
     W: 'translateX(12px) translateY(12px) scale(1.2)',
     X: 'translateX(-12px) translateY(12px) scale(1.2)',
+    0: '',
     1: '',
     2: '',
     3: '',
     4: '',
     5: '',
-    6: '',
 }
 
 export const EDGE_TRANSFORMS = {
@@ -235,15 +246,15 @@ export const EDGE_TRANSFORMS = {
     V: 'translateX(12px) scale(1.2)',
     W: 'translateY(12px) scale(1.2)',
     X: 'translateX(-12px) scale(1.2)',
+    0: '',
     1: '',
     2: '',
     3: '',
     4: '',
     5: '',
-    6: '',
 }
 
-export const LETTER_COLOURS = {
+export const ROTATION_COLOURS = {
     A: COLOURS[0],
     B: COLOURS[0],
     C: COLOURS[0],
@@ -268,10 +279,43 @@ export const LETTER_COLOURS = {
     V: COLOURS[2],
     W: COLOURS[2],
     X: COLOURS[2],
+    0: '',
     1: '',
     2: '',
     3: '',
     4: '',
     5: '',
-    6: '',
+}
+
+export const ROTATION_BAR_COLOURS = {
+    A: [],
+    B: [],
+    C: [],
+    D: [],
+    E: [],
+    F: [],
+    G: [],
+    H: [],
+    I: [],
+    J: [],
+    K: [],
+    L: [],
+    M: [],
+    N: [],
+    O: [],
+    P: [],
+    Q: [],
+    R: [],
+    S: [],
+    T: [],
+    U: [],
+    V: [],
+    W: [],
+    X: [],
+    0: [4, 5, 3, 1],
+    1: [0, 2, 5, 4],
+    2: [5, 4, 3, 1],
+    3: [0, 2, 4, 5],
+    4: [0, 2, 1, 3],
+    5: [0, 2, 3, 1],
 }

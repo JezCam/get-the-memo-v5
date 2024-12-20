@@ -25,11 +25,11 @@ export type Rotation =
     | 'V'
     | 'W'
     | 'X'
+    | '0'
     | '1'
     | '2'
     | '3'
     | '4'
     | '5'
-    | '6'
 
 export type Style = 'stickerless' | 'black' | 'white' | 'purple'

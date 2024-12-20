@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Quaternion from 'quaternion'
 import {
     BORDER_RADIUS,
@@ -10,10 +10,13 @@ import {
     EDGE_ROTATIONS,
     EDGE_TRANSFORMS,
     FACE_TRANSFORMS,
+    ROTATION_BAR_COLOURS,
 } from '@/lib/piece-transforms'
 import { Rotation, PieceType, Style } from '@/lib/definitions'
 
 export default function Cube(props: {
+    onRotate: (rotation: Rotation) => void
+    letters: boolean
     pieceType: PieceType
     rotation: Rotation
     style: Style
@@ -58,6 +61,7 @@ export default function Cube(props: {
                   face: {
                       backgroundColor: 'white',
                       boxShadow: '0 0 0 1px white',
+                      borderRadius: '1px',
                   },
                   sticker: {},
               }
@@ -67,6 +71,8 @@ export default function Cube(props: {
             ? {
                   face: {
                       backgroundColor: '#7c3aed',
+                      boxShadow: '0 0 0 1px #7c3aed',
+                      borderRadius: '1px',
                   },
                   sticker: {},
               }
@@ -77,6 +83,171 @@ export default function Cube(props: {
             className="relative h-[200px] w-[200px]"
             style={{ perspective: '300px' }}
         >
+            <div
+                style={{
+                    opacity: props.letters ? 1 : 0,
+                    transition: props.letters
+                        ? 'opacity 1s ease'
+                        : 'opacity 0s',
+                }}
+            >
+                {/* Top Bar */}
+                <div
+                    onClick={() =>
+                        props.onRotate(
+                            ROTATION_BAR_COLOURS[
+                                props.rotation
+                            ][0].toString() as Rotation
+                        )
+                    }
+                    className="absolute -left-[50px] -top-[72px] flex h-[12px] w-[299px] cursor-pointer gap-3 transition-all hover:h-[24px] hover:-translate-y-[12px]"
+                >
+                    <div
+                        style={{
+                            backgroundColor:
+                                COLOURS[
+                                    ROTATION_BAR_COLOURS[props.rotation][0]
+                                ],
+                        }}
+                        className="h-full w-full rounded-[10px] rounded-bl-none transition-all"
+                    ></div>
+                    <div
+                        style={{
+                            backgroundColor:
+                                COLOURS[
+                                    ROTATION_BAR_COLOURS[props.rotation][0]
+                                ],
+                        }}
+                        className="h-full w-full rounded-[10px] transition-all"
+                    ></div>
+                    <div
+                        style={{
+                            backgroundColor:
+                                COLOURS[
+                                    ROTATION_BAR_COLOURS[props.rotation][0]
+                                ],
+                        }}
+                        className="h-full w-full rounded-[10px] rounded-br-none transition-all"
+                    ></div>
+                </div>
+                {/* Bottom Bar */}
+                <div
+                    onClick={() =>
+                        props.onRotate(
+                            ROTATION_BAR_COLOURS[
+                                props.rotation
+                            ][1].toString() as Rotation
+                        )
+                    }
+                    className="absolute -bottom-[72px] -left-[50px] flex h-[12px] w-[299px] cursor-pointer gap-3 transition-all hover:h-[24px] hover:translate-y-[12px]"
+                >
+                    <div
+                        style={{
+                            backgroundColor:
+                                COLOURS[
+                                    ROTATION_BAR_COLOURS[props.rotation][1]
+                                ],
+                        }}
+                        className="h-full w-full rounded-[10px] rounded-tl-none transition-all"
+                    ></div>
+                    <div
+                        style={{
+                            backgroundColor:
+                                COLOURS[
+                                    ROTATION_BAR_COLOURS[props.rotation][1]
+                                ],
+                        }}
+                        className="h-full w-full rounded-[10px] transition-all"
+                    ></div>
+                    <div
+                        style={{
+                            backgroundColor:
+                                COLOURS[
+                                    ROTATION_BAR_COLOURS[props.rotation][1]
+                                ],
+                        }}
+                        className="h-full w-full rounded-[10px] rounded-tr-none transition-all"
+                    ></div>
+                </div>
+                {/* Left Bar */}
+                <div
+                    onClick={() =>
+                        props.onRotate(
+                            ROTATION_BAR_COLOURS[
+                                props.rotation
+                            ][2].toString() as Rotation
+                        )
+                    }
+                    className="absolute -left-[72px] -top-[50px] flex h-[299px] w-[12px] cursor-pointer flex-col gap-3 transition-all hover:w-[24px] hover:-translate-x-[12px]"
+                >
+                    <div
+                        style={{
+                            backgroundColor:
+                                COLOURS[
+                                    ROTATION_BAR_COLOURS[props.rotation][2]
+                                ],
+                        }}
+                        className="h-full w-full rounded-[10px] rounded-tr-none transition-all"
+                    ></div>
+                    <div
+                        style={{
+                            backgroundColor:
+                                COLOURS[
+                                    ROTATION_BAR_COLOURS[props.rotation][2]
+                                ],
+                        }}
+                        className="h-full w-full rounded-[10px] transition-all"
+                    ></div>
+                    <div
+                        style={{
+                            backgroundColor:
+                                COLOURS[
+                                    ROTATION_BAR_COLOURS[props.rotation][2]
+                                ],
+                        }}
+                        className="h-full w-full rounded-[10px] rounded-br-none transition-all"
+                    ></div>
+                </div>
+                {/* Right Bar */}
+                <div
+                    onClick={() =>
+                        props.onRotate(
+                            ROTATION_BAR_COLOURS[
+                                props.rotation
+                            ][3].toString() as Rotation
+                        )
+                    }
+                    className="absolute -right-[72px] -top-[50px] flex h-[299px] w-[12px] cursor-pointer flex-col gap-3 transition-all hover:w-[24px] hover:translate-x-[12px]"
+                >
+                    <div
+                        style={{
+                            backgroundColor:
+                                COLOURS[
+                                    ROTATION_BAR_COLOURS[props.rotation][3]
+                                ],
+                        }}
+                        className="h-full w-full rounded-[10px] rounded-tl-none transition-all"
+                    ></div>
+                    <div
+                        style={{
+                            backgroundColor:
+                                COLOURS[
+                                    ROTATION_BAR_COLOURS[props.rotation][3]
+                                ],
+                        }}
+                        className="h-full w-full rounded-[10px] transition-all"
+                    ></div>
+                    <div
+                        style={{
+                            backgroundColor:
+                                COLOURS[
+                                    ROTATION_BAR_COLOURS[props.rotation][3]
+                                ],
+                        }}
+                        className="h-full w-full rounded-[10px] rounded-bl-none transition-all"
+                    ></div>
+                </div>
+            </div>
             <div
                 style={{
                     transformStyle: 'preserve-3d',
@@ -112,7 +283,9 @@ export default function Cube(props: {
                                             // Get rotation from i and j
                                             borderRadius: BORDER_RADIUS[j],
                                             opacity:
-                                                ij == i + '-' + j ? 1 : 0.4,
+                                                ij == i + '-' + j || ij == ''
+                                                    ? 1
+                                                    : 0.4,
                                             backgroundColor: COLOURS[i],
                                             transform:
                                                 ij == i + '-' + j

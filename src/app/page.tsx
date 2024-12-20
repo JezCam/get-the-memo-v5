@@ -12,9 +12,10 @@ import {
     ArrowRight,
     Settings2,
     ArrowLeft,
+    Repeat2Icon,
 } from 'lucide-react'
 import { getRandomRotation, getRandomPieceType } from '@/lib/utils'
-import { LETTER_COLOURS } from '@/lib/piece-transforms'
+import { INPUT_STYLES, ROTATION_COLOURS } from '@/lib/piece-transforms'
 import Image from 'next/image'
 import {
     TooltipContent,
@@ -22,6 +23,7 @@ import {
     TooltipTrigger,
     Tooltip,
 } from '@/components/ui/tooltip'
+import { DEFAULT_LETTERS, ROTATION_LETTER_INDEX } from '@/lib/letter-maps'
 
 enum State {
     Guessing = 'guessing',
@@ -38,6 +40,9 @@ export default function Home() {
     const [pieceType, setPieceType] = useState<'corner' | 'edge'>('corner')
     const [previousRotation, setPreviousRotation] = useState<Rotation>('A')
     const [rotation, setRotation] = useState<Rotation>('A')
+    const [letters, setLetters] = useState<boolean>(false)
+    const [letterScheme, setLetterScheme] =
+        useState<Record<string, string>>(DEFAULT_LETTERS)
     const [style, setStyle] = useState<Style>('black')
     const [input, setInput] = useState<string>()
     const inputRef = useRef<HTMLInputElement>(null)
@@ -49,13 +54,17 @@ export default function Home() {
     const [best, setBest] = useState<number>(0)
 
     const handleReveal = () => {
-        setInput(rotation)
+        const letterSchemeIndex =
+            (pieceType === 'corner' ? 'corner' : 'edge') + rotation
+        setInput(letterScheme[letterSchemeIndex])
         setState(State.Revealed)
         setScore(0)
     }
 
     const handleSubmit = () => {
-        if (input === rotation) {
+        const letterSchemeIndex =
+            (pieceType === 'corner' ? 'corner' : 'edge') + rotation
+        if (input === letterScheme[letterSchemeIndex]) {
             if (state === State.Guessing) {
                 if (score === best) {
                     setBest(score + 1)
@@ -65,7 +74,7 @@ export default function Home() {
             setState(State.Correct)
         } else {
             setState(State.Incorrect)
-            setInput(rotation)
+            setInput(letterScheme[letterSchemeIndex])
             setScore(0)
         }
     }
@@ -85,6 +94,7 @@ export default function Home() {
     const setRandomPiece = (_pieceType?: PieceType) => {
         const _rotation = getRandomRotation(rotation)
         setRotation(_rotation)
+        setPreviousRotation(_rotation)
 
         if (_pieceType) {
             setPieceType(_pieceType)
@@ -99,7 +109,7 @@ export default function Home() {
 
     return (
         <div className="flex h-screen w-screen items-center justify-center bg-black/95 font-semibold text-white">
-            <div className="flex flex-col items-center justify-center gap-24 rounded-3xl border-[1px] border-white/10 bg-black p-6">
+            <div className="flex flex-col items-center justify-center gap-28 rounded-3xl border-[1px] border-white/10 bg-black p-6">
                 {/* Top */}
                 {state === State.Configuring ? (
                     <div className="flex gap-3">
@@ -111,9 +121,11 @@ export default function Home() {
                                     <TooltipContent>Go back</TooltipContent>
                                     <TooltipTrigger>
                                         <button
-                                            onClick={() =>
+                                            onClick={() => {
+                                                setLetters(false)
+                                                setRotation(previousRotation)
                                                 setState(previousState)
-                                            }
+                                            }}
                                             className="relative flex h-20 w-20 items-center justify-center rounded-lg border border-muted-foreground transition-all hover:border-white hover:bg-white/10 [&_svg]:size-8"
                                         >
                                             <ArrowLeft />
@@ -147,6 +159,11 @@ export default function Home() {
                                                         corners &&
                                                         pieceType === 'corner'
                                                     ) {
+                                                        setPreviousState(
+                                                            State.Guessing
+                                                        )
+                                                        setInput('')
+                                                        setLetters(false)
                                                         setRandomPiece('edge')
                                                     }
                                                     setCorners(!corners)
@@ -184,6 +201,11 @@ export default function Home() {
                                                         edges &&
                                                         pieceType === 'edge'
                                                     ) {
+                                                        setPreviousState(
+                                                            State.Guessing
+                                                        )
+                                                        setInput('')
+                                                        setLetters(false)
                                                         setRandomPiece('corner')
                                                     }
                                                     setEdges(!edges)
@@ -201,6 +223,45 @@ export default function Home() {
                                         </TooltipTrigger>
                                     </Tooltip>
                                 </div>
+                            </div>
+                            {/* Change letter */}
+                            <div className="flex flex-col gap-2 text-sm">
+                                Letters
+                                <Tooltip>
+                                    <TooltipContent>
+                                        Change letters
+                                    </TooltipContent>
+                                    <TooltipTrigger>
+                                        <button
+                                            style={{
+                                                border: letters
+                                                    ? 'solid 1px hsl(var(--muted))'
+                                                    : '1px solid hsl(var(--muted-foreground))',
+                                                backgroundColor: letters
+                                                    ? 'rgba(250,250,250,.12)'
+                                                    : '',
+                                                opacity: letters ? 1 : 0.8,
+                                            }}
+                                            onClick={() => {
+                                                if (!letters) {
+                                                    setLetters(true)
+                                                    setPreviousRotation(
+                                                        rotation
+                                                    )
+                                                    setRotation('0')
+                                                } else {
+                                                    setRotation(
+                                                        previousRotation
+                                                    )
+                                                    setLetters(false)
+                                                }
+                                            }}
+                                            className="relative flex h-20 w-20 items-center justify-center rounded-lg border border-muted-foreground text-3xl transition-all hover:border-white hover:bg-white/10 [&_svg]:size-8"
+                                        >
+                                            AA
+                                        </button>
+                                    </TooltipTrigger>
+                                </Tooltip>
                             </div>
                         </TooltipProvider>
                     </div>
@@ -265,12 +326,62 @@ export default function Home() {
                     </div>
                 )}
                 <div className="flex flex-col items-center gap-32">
-                    <Cube
-                        pieceType={pieceType}
-                        rotation={rotation}
-                        style={style}
-                    />
+                    <div className="relative">
+                        <Cube
+                            onRotate={(_rotation: Rotation) =>
+                                setRotation(_rotation)
+                            }
+                            letters={letters}
+                            pieceType={pieceType}
+                            rotation={rotation}
+                            style={style}
+                        />
 
+                        <div
+                            style={{
+                                opacity: letters ? 1 : 0,
+                                pointerEvents: letters ? 'all' : 'none',
+                                transition: letters
+                                    ? 'opacity 1s ease'
+                                    : 'opacity 0s',
+                            }}
+                        >
+                            {/* Inputs */}
+                            {Array(8)
+                                .fill('')
+                                .map((_, i) => (
+                                    <Input
+                                        onChange={(e) => {
+                                            const newLetter =
+                                                e.currentTarget.value.toUpperCase()
+                                            const _letterScheme = {
+                                                ...letterScheme,
+                                            }
+                                            _letterScheme[
+                                                ROTATION_LETTER_INDEX[rotation][
+                                                    i
+                                                ]
+                                            ] = newLetter
+                                            setLetterScheme(_letterScheme)
+                                        }}
+                                        value={
+                                            letterScheme[
+                                                ROTATION_LETTER_INDEX[rotation][
+                                                    i
+                                                ]
+                                            ]
+                                        }
+                                        key={i}
+                                        style={INPUT_STYLES[i]}
+                                        className="absolute h-16 w-16 bg-black/50 text-center !text-4xl"
+                                    />
+                                ))}
+                            {/* Reset */}
+                            <Button className="absolute left-[68px] top-[68px] h-16 w-16 [&_svg]:size-8">
+                                <Repeat2Icon />
+                            </Button>
+                        </div>
+                    </div>
                     {state === State.Configuring ? (
                         <TooltipProvider>
                             {/* Select Style */}
@@ -418,7 +529,7 @@ export default function Home() {
                                         }}
                                         style={{
                                             outlineColor:
-                                                LETTER_COLOURS[rotation],
+                                                ROTATION_COLOURS[rotation],
                                             outlineOffset: 4,
                                             outlineWidth: 3,
                                             border: {
