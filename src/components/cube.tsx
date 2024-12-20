@@ -20,6 +20,8 @@ export default function Cube(props: {
     pieceType: PieceType
     rotation: Rotation
     style: Style
+    correct: boolean
+    incorrect: boolean
 }) {
     const pieceRotation: [number, number, number, string] =
         props.pieceType === 'corner'
@@ -77,6 +79,12 @@ export default function Cube(props: {
                   sticker: {},
               }
             : {}
+    const correctStyle = props.correct
+        ? { boxShadow: 'inset 0 0 0 8px green' }
+        : {}
+    const incorrectStyle = props.incorrect
+        ? { boxShadow: 'inset 0 0 0 8px red' }
+        : {}
 
     return (
         <div
@@ -270,6 +278,8 @@ export default function Cube(props: {
                                 ...blackStyle.face,
                                 ...whiteStyle.face,
                                 ...purpleStyle.face,
+                                ...correctStyle,
+                                ...incorrectStyle,
                             }}
                             className="absolute grid h-[200px] w-[200px] grid-cols-3 transition-all"
                         >

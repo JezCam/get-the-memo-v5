@@ -361,6 +361,8 @@ export default function Home() {
                             pieceType={pieceType}
                             rotation={rotation}
                             style={style}
+                            correct={state === State.Correct}
+                            incorrect={state === State.Incorrect}
                         />
 
                         <div
