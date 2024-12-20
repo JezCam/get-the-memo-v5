@@ -87,7 +87,7 @@ export const ROTATION_LETTER_INDEX: Record<Rotation, string[]> = {
     X: [],
 }
 
-export const DEFAULT_LETTERS: Record<string, string> = {
+export const DEFAULT_LETTER_SCHEME: Record<string, string> = {
     cornerA: 'A',
     edgeA: 'A',
     cornerB: 'B',

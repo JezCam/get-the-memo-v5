@@ -23,7 +23,8 @@ import {
     TooltipTrigger,
     Tooltip,
 } from '@/components/ui/tooltip'
-import { DEFAULT_LETTERS, ROTATION_LETTER_INDEX } from '@/lib/letter-maps'
+import { DEFAULT_LETTER_SCHEME, ROTATION_LETTER_INDEX } from '@/lib/letter-maps'
+import { useStore } from '@/store/useStore'
 
 enum State {
     Guessing = 'guessing',
@@ -37,21 +38,30 @@ enum State {
 export default function Home() {
     const [previousState, setPreviousState] = useState<State>(State.Guessing)
     const [state, setState] = useState<State>(State.Guessing)
-    const [pieceType, setPieceType] = useState<'corner' | 'edge'>('corner')
     const [previousRotation, setPreviousRotation] = useState<Rotation>('A')
-    const [rotation, setRotation] = useState<Rotation>('A')
     const [letters, setLetters] = useState<boolean>(false)
-    const [letterScheme, setLetterScheme] =
-        useState<Record<string, string>>(DEFAULT_LETTERS)
-    const [style, setStyle] = useState<Style>('black')
     const [input, setInput] = useState<string>()
     const inputRef = useRef<HTMLInputElement>(null)
     const revealRef = useRef<HTMLButtonElement>(null)
     const submitRef = useRef<HTMLButtonElement>(null)
-    const [corners, setCorners] = useState<boolean>(true)
-    const [edges, setEdges] = useState<boolean>(true)
     const [score, setScore] = useState<number>(0)
     const [best, setBest] = useState<number>(0)
+
+    // Global persistent state
+    const {
+        rotation,
+        pieceType,
+        letterScheme,
+        corners,
+        edges,
+        style,
+        setCorners,
+        setEdges,
+        setRotation,
+        setPieceType,
+        updateLetter,
+        setStyle,
+    } = useStore()
 
     const handleReveal = () => {
         const letterSchemeIndex =
@@ -115,12 +125,16 @@ export default function Home() {
                     <div className="flex gap-3">
                         <TooltipProvider>
                             {/* Back */}
-                            <div className="flex flex-col gap-2 text-sm">
+                            <div className="flex flex-col items-end gap-2 text-sm">
                                 Back
                                 <Tooltip>
                                     <TooltipContent>Go back</TooltipContent>
                                     <TooltipTrigger>
                                         <button
+                                            style={{
+                                                transform:
+                                                    'perspective(300px) rotateY(35deg) translateX(6px) scaleX(1.2) scaleY(1.1)',
+                                            }}
                                             onClick={() => {
                                                 setLetters(false)
                                                 setRotation(previousRotation)
@@ -134,7 +148,7 @@ export default function Home() {
                                 </Tooltip>
                             </div>
                             {/* Configure Pieces */}
-                            <div className="flex flex-col gap-2 text-sm">
+                            <div className="flex flex-col items-center gap-2 text-sm">
                                 Configure pieces
                                 <div className="flex gap-3">
                                     {/* Corners */}
@@ -241,6 +255,8 @@ export default function Home() {
                                                     ? 'rgba(250,250,250,.12)'
                                                     : '',
                                                 opacity: letters ? 1 : 0.8,
+                                                transform:
+                                                    'perspective(300px) rotateY(-35deg) translateX(-6px) scaleX(1.2) scaleY(1.1)',
                                             }}
                                             onClick={() => {
                                                 if (!letters) {
@@ -269,7 +285,7 @@ export default function Home() {
                     <div className="flex gap-3">
                         <TooltipProvider>
                             {/* Configure */}
-                            <div className="flex flex-col gap-2 text-sm">
+                            <div className="flex flex-col items-end gap-2 text-sm">
                                 Configure
                                 <Tooltip>
                                     <TooltipContent>
@@ -277,6 +293,10 @@ export default function Home() {
                                     </TooltipContent>
                                     <TooltipTrigger>
                                         <button
+                                            style={{
+                                                transform:
+                                                    'perspective(300px) rotateY(35deg) translateX(6px) scaleX(1.2) scaleY(1.1)',
+                                            }}
                                             onClick={() => {
                                                 setPreviousState(state)
                                                 setState(State.Configuring)
@@ -289,14 +309,14 @@ export default function Home() {
                                 </Tooltip>
                             </div>
                             {/* Score */}
-                            <div className="flex flex-col gap-2 text-sm">
+                            <div className="flex flex-col items-center gap-2 text-sm">
                                 Score
                                 <div className="relative flex h-20 w-20 items-center justify-center rounded-lg border border-muted-foreground text-2xl">
                                     {score}
                                 </div>
                             </div>
                             {/* Best */}
-                            <div className="flex flex-col gap-2 text-sm">
+                            <div className="flex flex-col items-center gap-2 text-sm">
                                 Best
                                 <div className="relative flex h-20 w-20 items-center justify-center rounded-lg border border-muted-foreground text-2xl">
                                     {best}
@@ -309,6 +329,10 @@ export default function Home() {
                                     <TooltipContent>Follow me!</TooltipContent>
                                     <TooltipTrigger>
                                         <a
+                                            style={{
+                                                transform:
+                                                    'perspective(300px) rotateY(-35deg) translateX(-6px) scaleX(1.2) scaleY(1.1)',
+                                            }}
                                             href="https://x.com/jeremycameron"
                                             target="_blank"
                                             className="relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-lg border border-muted-foreground"
@@ -354,15 +378,12 @@ export default function Home() {
                                         onChange={(e) => {
                                             const newLetter =
                                                 e.currentTarget.value.toUpperCase()
-                                            const _letterScheme = {
-                                                ...letterScheme,
-                                            }
-                                            _letterScheme[
+                                            updateLetter(
                                                 ROTATION_LETTER_INDEX[rotation][
                                                     i
-                                                ]
-                                            ] = newLetter
-                                            setLetterScheme(_letterScheme)
+                                                ],
+                                                newLetter
+                                            )
                                         }}
                                         value={
                                             letterScheme[
@@ -373,11 +394,20 @@ export default function Home() {
                                         }
                                         key={i}
                                         style={INPUT_STYLES[i]}
-                                        className="absolute h-16 w-16 bg-black/50 text-center !text-4xl"
+                                        className="absolute h-16 w-16 bg-black/50 p-0 text-center !text-4xl"
                                     />
                                 ))}
                             {/* Reset */}
-                            <Button className="absolute left-[68px] top-[68px] h-16 w-16 [&_svg]:size-8">
+                            <Button
+                                onClick={() => {
+                                    for (let i = 0; i < 8; i++) {
+                                        updateLetter(
+                                            ROTATION_LETTER_INDEX[rotation][i]
+                                        )
+                                    }
+                                }}
+                                className="absolute left-[68px] top-[68px] h-16 w-16 [&_svg]:size-8"
+                            >
                                 <Repeat2Icon />
                             </Button>
                         </div>
@@ -385,7 +415,7 @@ export default function Home() {
                     {state === State.Configuring ? (
                         <TooltipProvider>
                             {/* Select Style */}
-                            <div className="flex flex-col gap-2 text-sm">
+                            <div className="flex flex-col items-center gap-2 text-sm">
                                 Change style
                                 <div className="flex gap-3">
                                     {/* Stickerless */}
@@ -395,6 +425,10 @@ export default function Home() {
                                         </TooltipContent>
                                         <TooltipTrigger>
                                             <button
+                                                style={{
+                                                    transform:
+                                                        'perspective(300px) rotateY(35deg) translateX(6px) scaleX(1.2) scaleY(1.1)',
+                                                }}
                                                 onClick={() =>
                                                     setStyle('stickerless')
                                                 }
@@ -452,6 +486,10 @@ export default function Home() {
                                         <TooltipContent>Purple</TooltipContent>
                                         <TooltipTrigger>
                                             <button
+                                                style={{
+                                                    transform:
+                                                        'perspective(300px) rotateY(-35deg) translateX(-6px) scaleX(1.2) scaleY(1.1)',
+                                                }}
                                                 onClick={() =>
                                                     setStyle('purple')
                                                 }
@@ -483,6 +521,10 @@ export default function Home() {
                                             <Button
                                                 onClick={handleReveal}
                                                 ref={revealRef}
+                                                style={{
+                                                    transform:
+                                                        'perspective(300px) rotateY(35deg) translateX(6px) scaleX(1.2) scaleY(1.1)',
+                                                }}
                                                 className="h-20 w-20 rounded-lg bg-red-600 [&_svg]:size-8"
                                                 variant={'destructive'}
                                             >
@@ -497,6 +539,10 @@ export default function Home() {
                                         </TooltipContent>
                                         <TooltipTrigger>
                                             <Button
+                                                style={{
+                                                    transform:
+                                                        'perspective(300px) rotateY(35deg) translateX(6px) scaleX(1.2) scaleY(1.1)',
+                                                }}
                                                 onClick={handleTryAgain}
                                                 ref={revealRef}
                                                 className="h-20 w-20 rounded-lg [&_svg]:size-8"
@@ -507,7 +553,7 @@ export default function Home() {
                                         </TooltipTrigger>
                                     </Tooltip>
                                 )}
-                                <div className="flex flex-col gap-2 text-sm font-semibold">
+                                <div className="flex flex-col items-center gap-2 text-sm font-semibold">
                                     Enter a letter
                                     <Input
                                         value={input}
@@ -559,6 +605,10 @@ export default function Home() {
                                         <TooltipContent>Submit</TooltipContent>
                                         <TooltipTrigger>
                                             <Button
+                                                style={{
+                                                    transform:
+                                                        'perspective(300px) rotateY(-35deg) translateX(-6px) scaleX(1.2) scaleY(1.1)',
+                                                }}
                                                 onClick={handleSubmit}
                                                 ref={submitRef}
                                                 className="h-20 w-20 rounded-lg [&_svg]:size-8"
@@ -573,6 +623,10 @@ export default function Home() {
                                         <TooltipContent>Next</TooltipContent>
                                         <TooltipTrigger>
                                             <Button
+                                                style={{
+                                                    transform:
+                                                        'perspective(300px) rotateY(-35deg) translateX(-6px) scaleX(1.2) scaleY(1.1)',
+                                                }}
                                                 onClick={handleNext}
                                                 ref={submitRef}
                                                 className="h-20 w-20 rounded-lg [&_svg]:size-8"
