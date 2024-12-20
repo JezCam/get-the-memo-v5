@@ -44,8 +44,6 @@ export default function Home() {
     const inputRef = useRef<HTMLInputElement>(null)
     const revealRef = useRef<HTMLButtonElement>(null)
     const submitRef = useRef<HTMLButtonElement>(null)
-    const [score, setScore] = useState<number>(0)
-    const [best, setBest] = useState<number>(0)
 
     // Global persistent state
     const {
@@ -55,12 +53,16 @@ export default function Home() {
         corners,
         edges,
         style,
+        score,
+        best,
         setCorners,
         setEdges,
         setRotation,
         setPieceType,
         updateLetter,
         setStyle,
+        setScore,
+        setBest,
     } = useStore()
 
     const handleReveal = () => {

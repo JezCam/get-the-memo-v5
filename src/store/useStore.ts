@@ -10,6 +10,8 @@ type state = {
     pieceType: PieceType
     letterScheme: Record<string, string>
     style: Style
+    score: number
+    best: number
 }
 
 const stateDefault: state = {
@@ -19,6 +21,8 @@ const stateDefault: state = {
     pieceType: 'corner',
     letterScheme: DEFAULT_LETTER_SCHEME,
     style: 'black',
+    score: 0,
+    best: 0,
 }
 
 export const useStore = create(
@@ -30,6 +34,8 @@ export const useStore = create(
             setPieceType: (pieceType: PieceType) => void
             updateLetter: (key: string, letter?: string) => void
             setStyle: (style: Style) => void
+            setScore: (score: number) => void
+            setBest: (score: number) => void
         }
     >(
         (set, get) => ({
@@ -45,6 +51,8 @@ export const useStore = create(
                 set({ letterScheme: _letterScheme })
             },
             setStyle: (style: Style) => set({ style: style }),
+            setScore: (score: number) => set({ score: score }),
+            setBest: (score: number) => set({ best: score }),
         }),
         { name: 'state' }
     )
