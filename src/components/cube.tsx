@@ -1,6 +1,7 @@
 import React from 'react'
 import Quaternion from 'quaternion'
 import {
+    BORDER_RADIUS,
     COLOURS,
     CORNER_INDEX_MAP,
     CORNER_ROTATIONS,
@@ -10,22 +11,66 @@ import {
     EDGE_TRANSFORMS,
     FACE_TRANSFORMS,
 } from '@/lib/piece-transforms'
-import { Letter, PieceType } from '@/lib/definitions'
+import { Rotation, PieceType, Style } from '@/lib/definitions'
 
-export default function Cube(props: { pieceType: PieceType; letter: Letter }) {
+export default function Cube(props: {
+    pieceType: PieceType
+    rotation: Rotation
+    style: Style
+}) {
     const pieceRotation: [number, number, number, string] =
         props.pieceType === 'corner'
-            ? CORNER_ROTATIONS[props.letter]
-            : EDGE_ROTATIONS[props.letter]
+            ? CORNER_ROTATIONS[props.rotation]
+            : EDGE_ROTATIONS[props.rotation]
     const stickerTransform =
         props.pieceType === 'corner'
-            ? CORNER_TRANSFORMS[props.letter]
-            : EDGE_TRANSFORMS[props.letter]
+            ? CORNER_TRANSFORMS[props.rotation]
+            : EDGE_TRANSFORMS[props.rotation]
     const ij =
         props.pieceType === 'corner'
-            ? CORNER_INDEX_MAP[props.letter]
-            : EDGE_INDEX_MAP[props.letter]
+            ? CORNER_INDEX_MAP[props.rotation]
+            : EDGE_INDEX_MAP[props.rotation]
     const quaternion = Quaternion.fromEuler(...pieceRotation)
+
+    const stickerlessStyle =
+        props.style === 'stickerless'
+            ? {
+                  face: {
+                      gap: 0,
+                      padding: 0,
+                      backgroundColor: 'black',
+                  },
+                  sticker: {},
+              }
+            : {}
+    const blackStyle =
+        props.style === 'black'
+            ? {
+                  face: {
+                      backgroundColor: 'black',
+                  },
+                  sticker: {},
+              }
+            : {}
+    const whiteStyle =
+        props.style === 'white'
+            ? {
+                  face: {
+                      backgroundColor: 'white',
+                      boxShadow: '0 0 0 1px white',
+                  },
+                  sticker: {},
+              }
+            : {}
+    const purpleStyle =
+        props.style === 'purple'
+            ? {
+                  face: {
+                      backgroundColor: '#7c3aed',
+                  },
+                  sticker: {},
+              }
+            : {}
 
     return (
         <div
@@ -48,8 +93,14 @@ export default function Cube(props: { pieceType: PieceType; letter: Letter }) {
                             style={{
                                 transform: FACE_TRANSFORMS[i],
                                 backfaceVisibility: 'hidden',
+                                gap: '6px',
+                                padding: '3px',
+                                ...stickerlessStyle.face,
+                                ...blackStyle.face,
+                                ...whiteStyle.face,
+                                ...purpleStyle.face,
                             }}
-                            className="absolute grid h-[200px] w-[200px] grid-cols-3 gap-2 p-1"
+                            className="absolute grid h-[200px] w-[200px] grid-cols-3 transition-all"
                         >
                             {/* STICKERS */}
                             {Array(9)
@@ -58,16 +109,24 @@ export default function Cube(props: { pieceType: PieceType; letter: Letter }) {
                                     <div
                                         key={i + '-' + j}
                                         style={{
-                                            // Get letter from i and j
+                                            // Get rotation from i and j
+                                            borderRadius: BORDER_RADIUS[j],
                                             opacity:
-                                                ij == i + '-' + j ? 1 : 0.3,
+                                                ij == i + '-' + j ? 1 : 0.4,
                                             backgroundColor: COLOURS[i],
                                             transform:
                                                 ij == i + '-' + j
                                                     ? stickerTransform
                                                     : 'none',
+                                            zIndex: ij == i + '-' + j ? 2 : 1,
+                                            boxShadow:
+                                                'inset 0 0 0 2px rgba(0,0,0,0.1)',
+                                            ...stickerlessStyle.sticker,
+                                            ...blackStyle.sticker,
+                                            ...whiteStyle.sticker,
+                                            ...purpleStyle.sticker,
                                         }}
-                                        className="flex h-full w-full items-center justify-center rounded-md transition-all duration-700"
+                                        className="flex h-full w-full items-center justify-center transition-all duration-700"
                                     />
                                 ))}
                         </div>

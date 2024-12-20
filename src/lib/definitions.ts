@@ -1,6 +1,6 @@
 export type PieceType = 'corner' | 'edge'
 
-export type Letter =
+export type Rotation =
     | 'A'
     | 'B'
     | 'C'
@@ -25,3 +25,11 @@ export type Letter =
     | 'V'
     | 'W'
     | 'X'
+    | '1'
+    | '2'
+    | '3'
+    | '4'
+    | '5'
+    | '6'
+
+export type Style = 'stickerless' | 'black' | 'white' | 'purple'

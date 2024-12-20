@@ -3,10 +3,17 @@
 import Cube from '@/components/cube'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Letter, PieceType } from '@/lib/definitions'
+import { Rotation, PieceType, Style } from '@/lib/definitions'
 import { useRef, useState } from 'react'
-import { Eye, CornerDownLeft, Repeat2, ArrowRight } from 'lucide-react'
-import { getRandomLetter, getRandomPieceType } from '@/lib/utils'
+import {
+    Eye,
+    CornerDownLeft,
+    Repeat2,
+    ArrowRight,
+    Settings2,
+    ArrowLeft,
+} from 'lucide-react'
+import { getRandomRotation, getRandomPieceType } from '@/lib/utils'
 import { LETTER_COLOURS } from '@/lib/piece-transforms'
 import Image from 'next/image'
 import {
@@ -22,12 +29,16 @@ enum State {
     Revealed = 'revealed',
     Correct = 'correct',
     Incorrect = 'incorrect',
+    Configuring = 'configuring',
 }
 
 export default function Home() {
+    const [previousState, setPreviousState] = useState<State>(State.Guessing)
     const [state, setState] = useState<State>(State.Guessing)
     const [pieceType, setPieceType] = useState<'corner' | 'edge'>('corner')
-    const [letter, setLetter] = useState<Letter>('A')
+    const [previousRotation, setPreviousRotation] = useState<Rotation>('A')
+    const [rotation, setRotation] = useState<Rotation>('A')
+    const [style, setStyle] = useState<Style>('black')
     const [input, setInput] = useState<string>()
     const inputRef = useRef<HTMLInputElement>(null)
     const revealRef = useRef<HTMLButtonElement>(null)
@@ -38,13 +49,13 @@ export default function Home() {
     const [best, setBest] = useState<number>(0)
 
     const handleReveal = () => {
-        setInput(letter)
+        setInput(rotation)
         setState(State.Revealed)
         setScore(0)
     }
 
     const handleSubmit = () => {
-        if (input === letter) {
+        if (input === rotation) {
             if (state === State.Guessing) {
                 if (score === best) {
                     setBest(score + 1)
@@ -54,7 +65,7 @@ export default function Home() {
             setState(State.Correct)
         } else {
             setState(State.Incorrect)
-            setInput(letter)
+            setInput(rotation)
             setScore(0)
         }
     }
@@ -72,8 +83,8 @@ export default function Home() {
     }
 
     const setRandomPiece = (_pieceType?: PieceType) => {
-        const _letter = getRandomLetter(letter)
-        setLetter(_letter)
+        const _rotation = getRandomRotation(rotation)
+        setRotation(_rotation)
 
         if (_pieceType) {
             setPieceType(_pieceType)
@@ -90,213 +101,380 @@ export default function Home() {
         <div className="flex h-screen w-screen items-center justify-center bg-black/95 font-semibold text-white">
             <div className="flex flex-col items-center justify-center gap-24 rounded-3xl border-[1px] border-white/10 bg-black p-6">
                 {/* Top */}
-                <div className="flex gap-3">
-                    {/* Score */}
-                    <div className="flex flex-col gap-2 text-sm font-semibold">
-                        Score
-                        <div className="relative flex h-20 w-20 items-center justify-center rounded-lg border border-muted-foreground text-2xl">
-                            {score}
-                        </div>
-                    </div>
-                    {/* Best */}
-                    <div className="flex flex-col gap-2 text-sm font-semibold">
-                        Best
-                        <div className="relative flex h-20 w-20 items-center justify-center rounded-lg border border-muted-foreground text-2xl">
-                            {best}
-                        </div>
-                    </div>
-                    {/* Configure Pieces */}
-                    <div className="flex flex-col gap-2 text-sm">
-                        Configure pieces
-                        <div className="flex gap-3">
-                            <TooltipProvider>
-                                {/* Corners */}
-                                <Tooltip>
-                                    <TooltipContent>
-                                        Allow corners
-                                    </TooltipContent>
-                                    <TooltipTrigger>
-                                        <button
-                                            disabled={!edges}
-                                            style={{
-                                                border: corners
-                                                    ? 'solid 1px hsl(var(--muted))'
-                                                    : '1px solid hsl(var(--muted-foreground))',
-                                                backgroundColor: corners
-                                                    ? 'rgba(250,250,250,.12)'
-                                                    : '',
-                                                opacity: corners ? 1 : 0.8,
-                                            }}
-                                            onClick={() => {
-                                                if (
-                                                    corners &&
-                                                    pieceType === 'corner'
-                                                ) {
-                                                    setRandomPiece('edge')
-                                                }
-                                                setCorners(!corners)
-                                            }}
-                                            className="relative flex h-20 w-20 items-center justify-center rounded-lg border border-muted-foreground"
-                                        >
-                                            <Image
-                                                src={'/corner.svg'}
-                                                width={32}
-                                                height={32}
-                                                alt="corner"
-                                            />
-                                        </button>
-                                    </TooltipTrigger>
-                                </Tooltip>
-                                {/* Edges */}
-                                <Tooltip>
-                                    <TooltipContent>Allow edges</TooltipContent>
-                                    <TooltipTrigger>
-                                        <button
-                                            disabled={!corners}
-                                            style={{
-                                                border: edges
-                                                    ? 'solid 1px hsl(var(--muted))'
-                                                    : '1px solid hsl(var(--muted-foreground))',
-                                                backgroundColor: edges
-                                                    ? 'rgba(250,250,250,.12)'
-                                                    : '',
-                                                opacity: edges ? 1 : 0.8,
-                                            }}
-                                            onClick={() => {
-                                                if (
-                                                    edges &&
-                                                    pieceType === 'edge'
-                                                ) {
-                                                    setRandomPiece('corner')
-                                                }
-                                                setEdges(!edges)
-                                            }}
-                                            className="relative flex h-20 w-20 items-center justify-center rounded-lg border border-muted-foreground"
-                                        >
-                                            <Image
-                                                src={'/edge.svg'}
-                                                width={32}
-                                                height={32}
-                                                alt="corner"
-                                            />
-                                        </button>
-                                    </TooltipTrigger>
-                                </Tooltip>
-                            </TooltipProvider>
-                        </div>
-                    </div>
-                </div>
-                <div className="flex flex-col items-center gap-32">
-                    <Cube pieceType={pieceType} letter={letter} />
-                    {/* Inputs */}
-                    <div className="flex items-end gap-3">
+                {state === State.Configuring ? (
+                    <div className="flex gap-3">
                         <TooltipProvider>
-                            {state === State.Guessing ||
-                            state === State.TryingAgain ? (
+                            {/* Back */}
+                            <div className="flex flex-col gap-2 text-sm">
+                                Back
                                 <Tooltip>
-                                    <TooltipContent>
-                                        Reveal letter
-                                    </TooltipContent>
+                                    <TooltipContent>Go back</TooltipContent>
                                     <TooltipTrigger>
-                                        <Button
-                                            onClick={handleReveal}
-                                            ref={revealRef}
-                                            className="h-20 w-20 rounded-lg bg-red-600 [&_svg]:size-8"
-                                            variant={'destructive'}
-                                        >
-                                            <Eye />
-                                        </Button>
-                                    </TooltipTrigger>
-                                </Tooltip>
-                            ) : (
-                                <Tooltip>
-                                    <TooltipContent>Try again</TooltipContent>
-                                    <TooltipTrigger>
-                                        <Button
-                                            onClick={handleTryAgain}
-                                            ref={revealRef}
-                                            className="h-20 w-20 rounded-lg [&_svg]:size-8"
-                                            variant={'default'}
-                                        >
-                                            <Repeat2 />
-                                        </Button>
-                                    </TooltipTrigger>
-                                </Tooltip>
-                            )}
-                            <div className="flex flex-col gap-2 text-sm font-semibold">
-                                Enter a letter
-                                <Input
-                                    value={input}
-                                    onChange={(e) => {
-                                        if (
-                                            e.target.value.slice(0, 1) != input
-                                        ) {
-                                            setInput(
-                                                e.target.value
-                                                    .slice(0, 1)
-                                                    .toUpperCase()
-                                            )
-                                            if (!e.target.value) {
-                                                return
+                                        <button
+                                            onClick={() =>
+                                                setState(previousState)
                                             }
-                                            submitRef.current?.focus()
-                                        }
-                                    }}
-                                    style={{
-                                        outlineColor: LETTER_COLOURS[letter],
-                                        outlineOffset: 4,
-                                        outlineWidth: 3,
-                                        border: {
-                                            correct: '1px solid green',
-                                            incorrect: '1px solid red',
-                                            guessing: '1px solid white',
-                                            revealed: '1px solid red',
-                                            tryingAgain: '1px solid white',
-                                        }[state],
-                                        color: {
-                                            correct: 'green',
-                                            incorrect: 'red',
-                                            guessing: 'white',
-                                            revealed: 'red',
-                                            tryingAgain: 'white',
-                                        }[state],
-                                    }}
-                                    ref={inputRef}
-                                    className="h-20 w-[172px] rounded-lg bg-black text-center font-[family-name:var(--font-geist-mono)] !text-6xl text-white ring-offset-black"
-                                />
+                                            className="relative flex h-20 w-20 items-center justify-center rounded-lg border border-muted-foreground transition-all hover:border-white hover:bg-white/10 [&_svg]:size-8"
+                                        >
+                                            <ArrowLeft />
+                                        </button>
+                                    </TooltipTrigger>
+                                </Tooltip>
                             </div>
-                            {state === State.Guessing ||
-                            state === State.TryingAgain ? (
-                                <Tooltip>
-                                    <TooltipContent>Submit</TooltipContent>
-                                    <TooltipTrigger>
-                                        <Button
-                                            onClick={handleSubmit}
-                                            ref={submitRef}
-                                            className="h-20 w-20 rounded-lg [&_svg]:size-8"
-                                            variant={'secondary'}
-                                        >
-                                            <CornerDownLeft />
-                                        </Button>
-                                    </TooltipTrigger>
-                                </Tooltip>
-                            ) : (
-                                <Tooltip>
-                                    <TooltipContent>Next</TooltipContent>
-                                    <TooltipTrigger>
-                                        <Button
-                                            onClick={handleNext}
-                                            ref={submitRef}
-                                            className="h-20 w-20 rounded-lg [&_svg]:size-8"
-                                            variant={'secondary'}
-                                        >
-                                            <ArrowRight />
-                                        </Button>
-                                    </TooltipTrigger>
-                                </Tooltip>
-                            )}
+                            {/* Configure Pieces */}
+                            <div className="flex flex-col gap-2 text-sm">
+                                Configure pieces
+                                <div className="flex gap-3">
+                                    {/* Corners */}
+                                    <Tooltip>
+                                        <TooltipContent>
+                                            Allow corners
+                                        </TooltipContent>
+                                        <TooltipTrigger>
+                                            <button
+                                                disabled={!edges}
+                                                style={{
+                                                    border: corners
+                                                        ? 'solid 1px hsl(var(--muted))'
+                                                        : '1px solid hsl(var(--muted-foreground))',
+                                                    backgroundColor: corners
+                                                        ? 'rgba(250,250,250,.12)'
+                                                        : '',
+                                                    opacity: corners ? 1 : 0.8,
+                                                }}
+                                                onClick={() => {
+                                                    if (
+                                                        corners &&
+                                                        pieceType === 'corner'
+                                                    ) {
+                                                        setRandomPiece('edge')
+                                                    }
+                                                    setCorners(!corners)
+                                                }}
+                                                className="relative flex h-20 w-20 items-center justify-center rounded-lg border border-muted-foreground"
+                                            >
+                                                <Image
+                                                    src={'/corner.svg'}
+                                                    width={32}
+                                                    height={32}
+                                                    alt="corner"
+                                                />
+                                            </button>
+                                        </TooltipTrigger>
+                                    </Tooltip>
+                                    {/* Edges */}
+                                    <Tooltip>
+                                        <TooltipContent>
+                                            Allow edges
+                                        </TooltipContent>
+                                        <TooltipTrigger>
+                                            <button
+                                                disabled={!corners}
+                                                style={{
+                                                    border: edges
+                                                        ? 'solid 1px hsl(var(--muted))'
+                                                        : '1px solid hsl(var(--muted-foreground))',
+                                                    backgroundColor: edges
+                                                        ? 'rgba(250,250,250,.12)'
+                                                        : '',
+                                                    opacity: edges ? 1 : 0.8,
+                                                }}
+                                                onClick={() => {
+                                                    if (
+                                                        edges &&
+                                                        pieceType === 'edge'
+                                                    ) {
+                                                        setRandomPiece('corner')
+                                                    }
+                                                    setEdges(!edges)
+                                                }}
+                                                className="relative flex h-20 w-20 items-center justify-center rounded-lg border border-muted-foreground"
+                                            >
+                                                <Image
+                                                    src={'/edge.svg'}
+                                                    width={32}
+                                                    height={32}
+                                                    alt="corner"
+                                                    className="rotate-90"
+                                                />
+                                            </button>
+                                        </TooltipTrigger>
+                                    </Tooltip>
+                                </div>
+                            </div>
                         </TooltipProvider>
                     </div>
+                ) : (
+                    <div className="flex gap-3">
+                        <TooltipProvider>
+                            {/* Configure */}
+                            <div className="flex flex-col gap-2 text-sm">
+                                Configure
+                                <Tooltip>
+                                    <TooltipContent>
+                                        Customise cube
+                                    </TooltipContent>
+                                    <TooltipTrigger>
+                                        <button
+                                            onClick={() => {
+                                                setPreviousState(state)
+                                                setState(State.Configuring)
+                                            }}
+                                            className="relative flex h-20 w-20 items-center justify-center rounded-lg border border-muted-foreground transition-all hover:border-white hover:bg-white/10 [&_svg]:size-8"
+                                        >
+                                            <Settings2 />
+                                        </button>
+                                    </TooltipTrigger>
+                                </Tooltip>
+                            </div>
+                            {/* Score */}
+                            <div className="flex flex-col gap-2 text-sm">
+                                Score
+                                <div className="relative flex h-20 w-20 items-center justify-center rounded-lg border border-muted-foreground text-2xl">
+                                    {score}
+                                </div>
+                            </div>
+                            {/* Best */}
+                            <div className="flex flex-col gap-2 text-sm">
+                                Best
+                                <div className="relative flex h-20 w-20 items-center justify-center rounded-lg border border-muted-foreground text-2xl">
+                                    {best}
+                                </div>
+                            </div>
+                            {/* Creator */}
+                            <div className="flex flex-col gap-2 text-sm">
+                                Creator
+                                <Tooltip>
+                                    <TooltipContent>Follow me!</TooltipContent>
+                                    <TooltipTrigger>
+                                        <a
+                                            href="https://x.com/jeremycameron"
+                                            target="_blank"
+                                            className="relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-lg border border-muted-foreground"
+                                        >
+                                            <Image
+                                                src="/me.png"
+                                                fill
+                                                alt="Jeremy Cameron"
+                                            />
+                                        </a>
+                                    </TooltipTrigger>
+                                </Tooltip>
+                            </div>
+                        </TooltipProvider>
+                    </div>
+                )}
+                <div className="flex flex-col items-center gap-32">
+                    <Cube
+                        pieceType={pieceType}
+                        rotation={rotation}
+                        style={style}
+                    />
+
+                    {state === State.Configuring ? (
+                        <TooltipProvider>
+                            {/* Select Style */}
+                            <div className="flex flex-col gap-2 text-sm">
+                                Change style
+                                <div className="flex gap-3">
+                                    {/* Stickerless */}
+                                    <Tooltip>
+                                        <TooltipContent>
+                                            Stickerless
+                                        </TooltipContent>
+                                        <TooltipTrigger>
+                                            <button
+                                                onClick={() =>
+                                                    setStyle('stickerless')
+                                                }
+                                                className="relative flex h-20 w-20 items-center justify-center rounded-lg border border-muted-foreground"
+                                            >
+                                                <Image
+                                                    src={'/stickerless.svg'}
+                                                    width={42}
+                                                    height={42}
+                                                    alt="stickerless style"
+                                                />
+                                            </button>
+                                        </TooltipTrigger>
+                                    </Tooltip>
+                                    {/*Black */}
+                                    <Tooltip>
+                                        <TooltipContent>Black</TooltipContent>
+                                        <TooltipTrigger>
+                                            <button
+                                                onClick={() =>
+                                                    setStyle('black')
+                                                }
+                                                className="relative flex h-20 w-20 items-center justify-center rounded-lg border border-muted-foreground"
+                                            >
+                                                <Image
+                                                    src={'/black.svg'}
+                                                    width={42}
+                                                    height={42}
+                                                    alt="black style"
+                                                />
+                                            </button>
+                                        </TooltipTrigger>
+                                    </Tooltip>
+                                    {/* White */}
+                                    <Tooltip>
+                                        <TooltipContent>White</TooltipContent>
+                                        <TooltipTrigger>
+                                            <button
+                                                onClick={() =>
+                                                    setStyle('white')
+                                                }
+                                                className="relative flex h-20 w-20 items-center justify-center rounded-lg border border-muted-foreground"
+                                            >
+                                                <Image
+                                                    src={'/white.svg'}
+                                                    width={42}
+                                                    height={42}
+                                                    alt="corner"
+                                                />
+                                            </button>
+                                        </TooltipTrigger>
+                                    </Tooltip>
+                                    {/* Purple */}
+                                    <Tooltip>
+                                        <TooltipContent>Purple</TooltipContent>
+                                        <TooltipTrigger>
+                                            <button
+                                                onClick={() =>
+                                                    setStyle('purple')
+                                                }
+                                                className="relative flex h-20 w-20 items-center justify-center rounded-lg border border-muted-foreground"
+                                            >
+                                                <Image
+                                                    src={'/purple.svg'}
+                                                    width={42}
+                                                    height={42}
+                                                    alt="corner"
+                                                />
+                                            </button>
+                                        </TooltipTrigger>
+                                    </Tooltip>
+                                </div>
+                            </div>
+                        </TooltipProvider>
+                    ) : (
+                        // Inputs
+                        <div className="flex items-end gap-3">
+                            <TooltipProvider>
+                                {state === State.Guessing ||
+                                state === State.TryingAgain ? (
+                                    <Tooltip>
+                                        <TooltipContent>
+                                            Reveal letter
+                                        </TooltipContent>
+                                        <TooltipTrigger>
+                                            <Button
+                                                onClick={handleReveal}
+                                                ref={revealRef}
+                                                className="h-20 w-20 rounded-lg bg-red-600 [&_svg]:size-8"
+                                                variant={'destructive'}
+                                            >
+                                                <Eye />
+                                            </Button>
+                                        </TooltipTrigger>
+                                    </Tooltip>
+                                ) : (
+                                    <Tooltip>
+                                        <TooltipContent>
+                                            Try again
+                                        </TooltipContent>
+                                        <TooltipTrigger>
+                                            <Button
+                                                onClick={handleTryAgain}
+                                                ref={revealRef}
+                                                className="h-20 w-20 rounded-lg [&_svg]:size-8"
+                                                variant={'default'}
+                                            >
+                                                <Repeat2 />
+                                            </Button>
+                                        </TooltipTrigger>
+                                    </Tooltip>
+                                )}
+                                <div className="flex flex-col gap-2 text-sm font-semibold">
+                                    Enter a letter
+                                    <Input
+                                        value={input}
+                                        onChange={(e) => {
+                                            if (
+                                                e.target.value.slice(0, 1) !=
+                                                input
+                                            ) {
+                                                setInput(
+                                                    e.target.value
+                                                        .slice(0, 1)
+                                                        .toUpperCase()
+                                                )
+                                                if (!e.target.value) {
+                                                    return
+                                                }
+                                                submitRef.current?.focus()
+                                            }
+                                        }}
+                                        style={{
+                                            outlineColor:
+                                                LETTER_COLOURS[rotation],
+                                            outlineOffset: 4,
+                                            outlineWidth: 3,
+                                            border: {
+                                                correct: '1px solid green',
+                                                incorrect: '1px solid red',
+                                                guessing: '1px solid white',
+                                                revealed: '1px solid red',
+                                                tryingAgain: '1px solid white',
+                                                configuring: '1px solid white',
+                                            }[state],
+                                            color: {
+                                                correct: 'green',
+                                                incorrect: 'red',
+                                                guessing: 'white',
+                                                revealed: 'red',
+                                                tryingAgain: 'white',
+                                                configuring: 'white',
+                                            }[state],
+                                        }}
+                                        ref={inputRef}
+                                        className="h-20 w-[172px] rounded-lg bg-black text-center font-[family-name:var(--font-geist-mono)] !text-6xl text-white ring-offset-black"
+                                    />
+                                </div>
+                                {state === State.Guessing ||
+                                state === State.TryingAgain ? (
+                                    <Tooltip>
+                                        <TooltipContent>Submit</TooltipContent>
+                                        <TooltipTrigger>
+                                            <Button
+                                                onClick={handleSubmit}
+                                                ref={submitRef}
+                                                className="h-20 w-20 rounded-lg [&_svg]:size-8"
+                                                variant={'secondary'}
+                                            >
+                                                <CornerDownLeft />
+                                            </Button>
+                                        </TooltipTrigger>
+                                    </Tooltip>
+                                ) : (
+                                    <Tooltip>
+                                        <TooltipContent>Next</TooltipContent>
+                                        <TooltipTrigger>
+                                            <Button
+                                                onClick={handleNext}
+                                                ref={submitRef}
+                                                className="h-20 w-20 rounded-lg [&_svg]:size-8"
+                                                variant={'secondary'}
+                                            >
+                                                <ArrowRight />
+                                            </Button>
+                                        </TooltipTrigger>
+                                    </Tooltip>
+                                )}
+                            </TooltipProvider>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

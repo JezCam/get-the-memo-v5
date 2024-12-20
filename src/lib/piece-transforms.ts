@@ -9,11 +9,23 @@ export const COLOURS = [
 
 export const FACE_TRANSFORMS = [
     'translateZ(100px)',
-    'rotateY(90deg) translateZ(99px)',
-    'rotateY(180deg) translateZ(99px)',
-    'rotateY(-90deg) translateZ(99px)',
-    'rotateX(90deg) translateZ(99px)',
-    'rotateX(-90deg) translateZ(99px)',
+    'rotateY(90deg) translateZ(100px)',
+    'rotateY(180deg) translateZ(100px)',
+    'rotateY(-90deg) translateZ(100px)',
+    'rotateX(90deg) translateZ(100px)',
+    'rotateX(-90deg) translateZ(100px)',
+]
+
+export const BORDER_RADIUS = [
+    '0px 10px 10px 10px',
+    '10px 10px 10px 10px',
+    '10px 0px 10px 10px',
+    '10px 10px 10px 10px',
+    '10px 10px 10px 10px',
+    '10px 10px 10px 10px',
+    '10px 10px 10px 0px',
+    '10px 10px 10px 10px',
+    '10px 10px 0px 10px',
 ]
 
 const deg = Math.PI / 180
@@ -58,6 +70,12 @@ export const CORNER_ROTATIONS = {
     V: xyz(233.26, 0, -135),
     W: xyz(233.26, 0, -45),
     X: xyz(233.26, 0, 45),
+    1: xyz(233.26, 0, 45),
+    2: xyz(233.26, 0, 45),
+    3: xyz(233.26, 0, 45),
+    4: xyz(233.26, 0, 45),
+    5: xyz(233.26, 0, 45),
+    6: xyz(233.26, 0, 45),
 }
 
 export const EDGE_ROTATIONS = {
@@ -85,6 +103,12 @@ export const EDGE_ROTATIONS = {
     V: xyz(45, 180, 90),
     W: xyz(45, 180, 180),
     X: xyz(45, 180, -90),
+    1: xyz(233.26, 0, 45),
+    2: xyz(233.26, 0, 45),
+    3: xyz(233.26, 0, 45),
+    4: xyz(233.26, 0, 45),
+    5: xyz(233.26, 0, 45),
+    6: xyz(233.26, 0, 45),
 }
 
 export const CORNER_INDEX_MAP = {
@@ -112,6 +136,12 @@ export const CORNER_INDEX_MAP = {
     V: '2-6',
     W: '2-0',
     X: '2-2',
+    1: '',
+    2: '',
+    3: '',
+    4: '',
+    5: '',
+    6: '',
 }
 
 export const EDGE_INDEX_MAP = {
@@ -139,6 +169,12 @@ export const EDGE_INDEX_MAP = {
     V: '2-3',
     W: '2-1',
     X: '2-5',
+    1: '',
+    2: '',
+    3: '',
+    4: '',
+    5: '',
+    6: '',
 }
 
 export const CORNER_TRANSFORMS = {
@@ -166,6 +202,12 @@ export const CORNER_TRANSFORMS = {
     V: 'translateX(12px) translateY(-12px) scale(1.2)',
     W: 'translateX(12px) translateY(12px) scale(1.2)',
     X: 'translateX(-12px) translateY(12px) scale(1.2)',
+    1: '',
+    2: '',
+    3: '',
+    4: '',
+    5: '',
+    6: '',
 }
 
 export const EDGE_TRANSFORMS = {
@@ -193,6 +235,12 @@ export const EDGE_TRANSFORMS = {
     V: 'translateX(12px) scale(1.2)',
     W: 'translateY(12px) scale(1.2)',
     X: 'translateX(-12px) scale(1.2)',
+    1: '',
+    2: '',
+    3: '',
+    4: '',
+    5: '',
+    6: '',
 }
 
 export const LETTER_COLOURS = {
@@ -220,4 +268,10 @@ export const LETTER_COLOURS = {
     V: COLOURS[2],
     W: COLOURS[2],
     X: COLOURS[2],
+    1: '',
+    2: '',
+    3: '',
+    4: '',
+    5: '',
+    6: '',
 }
